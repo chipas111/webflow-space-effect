@@ -10,25 +10,21 @@ Use [three.js](https://threejs.org/) JavaScript 3D library under the hood.
 
 ## Использование в Webflow
 
-### Метод 1: Через CDN
+### Установка
 
 1. Добавьте следующие скрипты в раздел "Custom Code" в настройках страницы:
 
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r127/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/space-travel-master@main/dist/space-travel.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/webflow-space-effect@main/dist/space-travel.umd.js"></script>
 ```
 
-2. Добавьте canvas элемент на страницу:
+2. Добавьте Canvas элемент на страницу через Webflow интерфейс и назначьте ему класс `space-travel`
 
-```html
-<canvas id="space-travel"></canvas>
-```
-
-3. Добавьте стили:
+3. Добавьте следующие стили в раздел "Custom Code":
 
 ```css
-#space-travel {
+.space-travel {
   position: fixed;
   top: 0;
   left: 0;
@@ -38,37 +34,48 @@ Use [three.js](https://threejs.org/) JavaScript 3D library under the hood.
 }
 ```
 
-4. Инициализируйте эффект:
+4. Добавьте инициализирующий скрипт в раздел "Custom Code" перед закрывающим тегом </body>:
 
 ```html
 <script>
-const canvas = document.querySelector("#space-travel");
-const spaceTravel = new SpaceTravel({
-  canvas,
-  throttle: 0.5
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.querySelector(".space-travel");
+    if (canvas) {
+        const spaceTravel = new SpaceTravel({
+            canvas,
+            throttle: 0.5
+        });
+        spaceTravel.start();
+    }
 });
-
-spaceTravel.start();
 </script>
 ```
 
-### Метод 2: Через npm (для продвинутых пользователей)
+### Настройка эффекта
 
-1. Установите пакет:
-```bash
-npm install space-travel three
+Вы можете настроить следующие параметры эффекта:
+
+- `throttle`: число от 0 до 1 - скорость эффекта (по умолчанию: 0)
+- Другие параметры можно найти в разделе API ниже
+
+### Управление через Interactions в Webflow
+
+Вы можете использовать Webflow Interactions для управления эффектом. Например:
+
+1. Для изменения скорости при наведении:
+```javascript
+const spaceEffect = document.querySelector('.space-travel').__spaceTravel;
+if (spaceEffect) {
+    spaceEffect.throttle = 0.8; // Увеличить скорость
+}
 ```
 
-2. Импортируйте и используйте:
+2. Для паузы/возобновления:
 ```javascript
-import SpaceTravel from 'space-travel';
-
-const spaceTravel = new SpaceTravel({
-  canvas: document.querySelector('#space-travel'),
-  throttle: 0.5
-});
-
-spaceTravel.start();
+const spaceEffect = document.querySelector('.space-travel').__spaceTravel;
+if (spaceEffect) {
+    spaceEffect.pause(); // или spaceEffect.resume()
+}
 ```
 
 ## API

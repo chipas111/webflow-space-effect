@@ -12,6 +12,7 @@ export default class SpaceTravel {
   private readonly scene: SpaceTravelScene;
   private readonly renderer: WebGLRenderer;
   private readonly renderLoop: RenderLoop;
+  private readonly canvas: HTMLCanvasElement;
 
   constructor(parameters: SpaceTravelParameters) {
     const {
@@ -45,6 +46,8 @@ export default class SpaceTravel {
     this.renderer = this.createRenderer(canvas);
     this.setSize(canvas);
     this.renderLoop = new RenderLoop(this.onRender.bind(this));
+    this.canvas = canvas;
+    (this.canvas as any).__spaceTravel = this;
   }
 
   get throttle(): number {

@@ -12,34 +12,14 @@ Use [three.js](https://threejs.org/) JavaScript 3D library under the hood.
 
 ### Установка
 
-1. Добавьте следующие скрипты в раздел "Custom Code" в настройках страницы в секцию HEAD:
+1. Добавьте следующие скрипты и стили в раздел "Custom Code" в секции HEAD:
 
 ```html
+<!-- Three.js библиотека -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r127/three.min.js"></script>
-```
 
-2. В секцию BODY (в самом конце):
-```html
-<script src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/webflow-space-effect@main/dist/space-travel.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const canvas = document.querySelector(".space-travel");
-    if (canvas) {
-        const spaceTravel = new SpaceTravel({
-            canvas,
-            throttle: 0.5
-        });
-        spaceTravel.start();
-    }
-});
-</script>
-```
-
-3. Добавьте Canvas элемент на страницу через Webflow интерфейс и назначьте ему класс `space-travel`
-
-4. Добавьте следующие стили в раздел "Custom Code" в HEAD:
-
-```css
+<!-- Стили для canvas -->
+<style>
 .space-travel {
   position: fixed;
   top: 0;
@@ -48,6 +28,31 @@ document.addEventListener('DOMContentLoaded', function() {
   height: 100%;
   z-index: -1;
 }
+</style>
+```
+
+2. Добавьте Canvas элемент на страницу через Webflow интерфейс и назначьте ему класс `space-travel`
+
+3. В самом конце секции BODY (перед закрывающим тегом </body>) добавьте:
+
+```html
+<!-- Эффект космического путешествия -->
+<script src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/webflow-space-effect@main/dist/space-travel.min.js"></script>
+<script>
+// Ждем полной загрузки страницы
+window.addEventListener('load', function() {
+    // Находим canvas элемент
+    const canvas = document.querySelector(".space-travel");
+    if (canvas && window.SpaceTravel) {
+        // Создаем эффект
+        const spaceTravel = new window.SpaceTravel({
+            canvas,
+            throttle: 0.5
+        });
+        spaceTravel.start();
+    }
+});
+</script>
 ```
 
 ### Настройка эффекта

@@ -13,9 +13,7 @@ export default defineConfig({
       output: {
         globals: {
           three: 'THREE'
-        },
-        format: 'umd',
-        name: 'SpaceTravel'
+        }
       }
     }
   }

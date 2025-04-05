@@ -7,7 +7,7 @@ interface SpaceTravelParameters extends SpaceTravelContextParameters, SpaceTrave
   canvas: HTMLCanvasElement;
 }
 
-export default class SpaceTravel {
+class SpaceTravel {
   private readonly context: SpaceTravelContext;
   private readonly scene: SpaceTravelScene;
   private readonly renderer: WebGLRenderer;
@@ -112,3 +112,11 @@ export default class SpaceTravel {
     }
   }
 }
+
+// Экспорт для разных окружений
+if (typeof window !== 'undefined') {
+  (window as any).SpaceTravel = SpaceTravel;
+}
+
+export { SpaceTravel };
+export default SpaceTravel;

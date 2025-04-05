@@ -5,15 +5,17 @@ export default defineConfig({
     lib: {
       entry: "src/lib/space-travel.ts",
       name: "SpaceTravel",
-      formats: ["es", "umd"],
-      fileName: (format) => `space-travel.${format}.js`
+      formats: ["umd"],
+      fileName: () => `space-travel.min.js`
     },
     rollupOptions: {
       external: ['three'],
       output: {
         globals: {
           three: 'THREE'
-        }
+        },
+        format: 'umd',
+        name: 'SpaceTravel'
       }
     }
   }

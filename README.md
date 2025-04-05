@@ -12,7 +12,7 @@ Use [three.js](https://threejs.org/) JavaScript 3D library under the hood.
 
 ### Установка
 
-1. Добавьте следующие скрипты и стили в раздел "Custom Code" в секции HEAD:
+1. В настройках страницы Webflow, в секции "Custom Code", добавьте в HEAD:
 
 ```html
 <!-- Three.js библиотека -->
@@ -21,23 +21,27 @@ Use [three.js](https://threejs.org/) JavaScript 3D library under the hood.
 <!-- Стили для canvas -->
 <style>
 .space-travel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    margin: 0;
+    padding: 0;
 }
 </style>
 ```
 
-2. Добавьте Canvas элемент на страницу через Webflow интерфейс и назначьте ему класс `space-travel`
+2. Добавьте Canvas элемент на страницу через Webflow интерфейс:
+   - Перетащите элемент "Embed" на страницу
+   - В настройках элемента добавьте: `<canvas class="space-travel"></canvas>`
 
-3. В самом конце секции BODY (перед закрывающим тегом </body>) добавьте:
+3. В конце секции BODY (перед закрывающим тегом </body>) добавьте:
 
 ```html
 <!-- Эффект космического путешествия -->
-<script src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/webflow-space-effect@main/dist/space-travel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/chipas111/webflow-space-effect@main/dist/space-travel.umd.js"></script>
 <script>
 // Ждем полной загрузки страницы
 window.addEventListener('load', function() {
@@ -45,41 +49,44 @@ window.addEventListener('load', function() {
     const canvas = document.querySelector(".space-travel");
     if (canvas && window.SpaceTravel) {
         // Создаем эффект
-        const spaceTravel = new window.SpaceTravel({
+        const spaceEffect = new window.SpaceTravel({
             canvas,
-            throttle: 0.5
+            throttle: 0.5 // Скорость эффекта (0-1)
         });
-        spaceTravel.start();
+        spaceEffect.start();
+
+        // Сохраняем доступ к эффекту для Interactions
+        window.spaceEffect = spaceEffect;
     }
 });
 </script>
 ```
 
-### Настройка эффекта
+### Управление через Webflow Interactions
 
-Вы можете настроить следующие параметры эффекта:
+Вы можете управлять эффектом через Interactions в Webflow. Примеры:
 
-- `throttle`: число от 0 до 1 - скорость эффекта (по умолчанию: 0)
-- Другие параметры можно найти в разделе API ниже
-
-### Управление через Interactions в Webflow
-
-Вы можете использовать Webflow Interactions для управления эффектом. Например:
-
-1. Для изменения скорости при наведении:
+1. Изменение скорости при наведении:
 ```javascript
-const spaceEffect = document.querySelector('.space-travel').__spaceTravel;
-if (spaceEffect) {
-    spaceEffect.throttle = 0.8; // Увеличить скорость
+window.spaceEffect.throttle = 0.8; // Увеличить скорость (0-1)
+```
+
+2. Пауза/возобновление при клике:
+```javascript
+if (window.spaceEffect.throttle > 0) {
+    window.spaceEffect.pause();
+} else {
+    window.spaceEffect.resume();
 }
 ```
 
-2. Для паузы/возобновления:
+3. Плавное изменение скорости:
 ```javascript
-const spaceEffect = document.querySelector('.space-travel').__spaceTravel;
-if (spaceEffect) {
-    spaceEffect.pause(); // или spaceEffect.resume()
-}
+// Увеличить скорость
+window.spaceEffect.throttle = Math.min(1, window.spaceEffect.throttle + 0.1);
+
+// Уменьшить скорость
+window.spaceEffect.throttle = Math.max(0, window.spaceEffect.throttle - 0.1);
 ```
 
 ## API
@@ -156,4 +163,1002 @@ const scene = new SpaceTravel(parameters);
 | name                            | value                                                                               | description                                                                             |
 | ------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `starfield.count`               | _optionnal_ default : `1500`                                                        | Number of stars in the scene                                                            |
+| `starfield.size`                | _optionnal_ default : `0.005`                                                       | Size of stars in the scene                                                             |
+| `starfield.speed`               | _optionnal_ default : `0.0005`                                                      | Speed of star movement in the scene                                                    |
+| `starfield.opacity`             | _optionnal_ default : `0.5`                                                         | Opacity of stars in the scene                                                           |
+| `starfield.color`               | _optionnal_ default : `0xffffff`                                                    | Color of stars in the scene                                                              |
+| `starfield.fade`                | _optionnal_ default : `0.0001`                                                      | Fade rate of stars in the scene                                                         |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                             |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                             |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                             |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                             |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                     |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                     |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                     |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                     |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                   |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                   |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
+| `starfield.maxOpacity`          | _optionnal_ default : `1`                                                           | Maximum opacity of stars in the scene                                                 |
+| `starfield.minFade`             | _optionnal_ default : `0.00001`                                                     | Minimum fade rate of stars in the scene                                                 |
+| `starfield.maxFade`             | _optionnal_ default : `0.001`                                                       | Maximum fade rate of stars in the scene                                                 |
+| `starfield.minDistance`         | _optionnal_ default : `100`                                                         | Minimum distance between stars in the scene                                                 |
+| `starfield.maxDistance`         | _optionnal_ default : `200`                                                         | Maximum distance between stars in the scene                                                 |
+| `starfield.minAngle`            | _optionnal_ default : `0`                                                           | Minimum angle between stars in the scene                                                 |
+| `starfield.maxAngle`            | _optionnal_ default : `360`                                                         | Maximum angle between stars in the scene                                                 |
+| `starfield.minSpeed`            | _optionnal_ default : `0.0001`                                                      | Minimum speed of star movement in the scene                                                 |
+| `starfield.maxSpeed`            | _optionnal_ default : `0.0005`                                                      | Maximum speed of star movement in the scene                                                 |
+| `starfield.minSize`             | _optionnal_ default : `0.001`                                                       | Minimum size of stars in the scene                                                 |
+| `starfield.maxSize`             | _optionnal_ default : `0.01`                                                        | Maximum size of stars in the scene                                                 |
+| `starfield.minOpacity`          | _optionnal_ default : `0.1`                                                         | Minimum opacity of stars in the scene                                                 |
 | `

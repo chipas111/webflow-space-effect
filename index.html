@@ -19,29 +19,46 @@
 
     <!-- Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.162.0/three.min.js"></script>
+
     <!-- Space Effect -->
-    <script src="https://cdn.jsdelivr.net/gh/chipas111/webflow-space-effect@gh-pages/js/space-effect.js"></script>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var container = document.getElementById('space-container');
-            if (!container) {
-                console.error('Container not found!');
-                return;
+        // Ждем загрузки Three.js
+        function waitForThree(callback) {
+            if (window.THREE) {
+                callback();
+            } else {
+                setTimeout(function() {
+                    waitForThree(callback);
+                }, 100);
             }
+        }
 
-            try {
-                var effect = new SpaceEffect({
-                    container: container,
-                    speed: 1,
-                    starCount: 1000
-                });
+        // Загружаем наш скрипт только после загрузки Three.js
+        waitForThree(function() {
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/gh/chipas111/webflow-space-effect@gh-pages/js/space-effect.js';
+            script.onload = function() {
+                // Инициализируем эффект после загрузки скрипта
+                var container = document.getElementById('space-container');
+                if (!container) {
+                    console.error('Container not found!');
+                    return;
+                }
 
-                window.spaceEffect = effect;
-                console.log('Space effect initialized successfully');
-            } catch (error) {
-                console.error('Error initializing space effect:', error);
-            }
+                try {
+                    var effect = new SpaceEffect({
+                        container: container,
+                        speed: 1,
+                        starCount: 1000
+                    });
+
+                    window.spaceEffect = effect;
+                    console.log('Space effect initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing space effect:', error);
+                }
+            };
+            document.body.appendChild(script);
         });
     </script>
 </body>

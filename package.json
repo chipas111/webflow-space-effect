@@ -1,6 +1,6 @@
 {
-  "name": "space-travel",
-  "version": "1.1.0",
+  "name": "webflow-space-effect",
+  "version": "1.0.0",
   "description": "WebGL space scene with lightspeed warp effect",
   "license": "The Unlicense",
   "repository": "frequin/space-travel",
@@ -21,7 +21,8 @@
     "build:demo": "vite build --config demo.vite.config.ts",
     "serve:demo": "vite preview --config demo.vite.config.ts",
     "test": "xo && prettier --check \"**/*.{json,css}\"",
-    "prepublishOnly": "npm run test && npm run build"
+    "prepublishOnly": "npm run test && npm run build",
+    "preview": "vite preview"
   },
   "files": [
     "dist"
@@ -36,7 +37,7 @@
   ],
   "dependencies": {
     "modern-normalize": "^1.0.0",
-    "three": "^0.127.0"
+    "three": "^0.162.0"
   },
   "devDependencies": {
     "@types/three": "^0.127.1",
@@ -44,7 +45,7 @@
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
     "typescript": "^4.2.3",
-    "vite": "^2.1.5",
+    "vite": "^5.1.4",
     "xo": "^0.38.2"
   },
   "xo": {

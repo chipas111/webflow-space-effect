@@ -9,12 +9,17 @@ export default defineConfig({
       fileName: (format) => `space-effect.${format}.js`
     },
     rollupOptions: {
-      external: ['three'],
+      external: [],
       output: {
-        globals: {
-          three: 'THREE'
-        }
+        format: 'umd',
+        name: 'SpaceEffect',
+        extend: true,
+        globals: {},
+        sourcemap: true,
+        minify: false
       }
-    }
+    },
+    sourcemap: true,
+    minify: false
   }
 }); 

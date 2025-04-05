@@ -1,1 +1,78 @@
-(function(n,r){typeof exports=="object"&&typeof module<"u"?module.exports=r(require("three")):typeof define=="function"&&define.amd?define(["three"],r):(n=typeof globalThis<"u"?globalThis:n||self,n.SpaceEffect=r(n.THREE))})(this,function(n){"use strict";function r(s){const e=Object.create(null,{[Symbol.toStringTag]:{value:"Module"}});if(s){for(const t in s)if(t!=="default"){const a=Object.getOwnPropertyDescriptor(s,t);Object.defineProperty(e,t,a.get?a:{enumerable:!0,get:()=>s[t]})}}return e.default=s,Object.freeze(e)}const i=r(n);class d{constructor(e={}){this.container=e.container||document.body,this.speed=e.speed||1,this.starCount=e.starCount||1e3,this.isPaused=!1,this.init()}init(){this.scene=new i.Scene,this.camera=new i.PerspectiveCamera(60,window.innerWidth/window.innerHeight,1,1e3),this.camera.position.z=1,this.camera.rotation.x=Math.PI/2,this.renderer=new i.WebGLRenderer,this.renderer.setSize(window.innerWidth,window.innerHeight),this.container.appendChild(this.renderer.domElement);const e=new i.BufferGeometry,t=new Float32Array(this.starCount*3);for(let o=0;o<this.starCount;o++)t[o*3]=Math.random()*600-300,t[o*3+1]=Math.random()*600-300,t[o*3+2]=Math.random()*600-300;e.setAttribute("position",new i.BufferAttribute(t,3));const a=new i.PointsMaterial({color:16777215,size:2,sizeAttenuation:!0});this.stars=new i.Points(e,a),this.scene.add(this.stars),this.animate(),window.addEventListener("resize",this.onWindowResize.bind(this))}animate(){if(!this.isPaused){const e=this.stars.geometry.attributes.position.array;for(let t=0;t<e.length;t+=3)e[t+1]-=this.speed,e[t+1]<-200&&(e[t+1]=200);this.stars.geometry.attributes.position.needsUpdate=!0}this.renderer.render(this.scene,this.camera),requestAnimationFrame(this.animate.bind(this))}onWindowResize(){this.camera.aspect=window.innerWidth/window.innerHeight,this.camera.updateProjectionMatrix(),this.renderer.setSize(window.innerWidth,window.innerHeight)}setSpeed(e){this.speed=e}pause(){this.isPaused=!0}resume(){this.isPaused=!1}destroy(){window.removeEventListener("resize",this.onWindowResize.bind(this)),this.container.removeChild(this.renderer.domElement),this.renderer.dispose()}}return d});
+(function(global, factory) {
+  typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, global.SpaceEffect = factory());
+})(this, function() {
+  "use strict";
+  class SpaceEffect {
+    constructor(options = {}) {
+      if (typeof window.THREE === "undefined") {
+        throw new Error("THREE is not loaded. Please load Three.js before initializing SpaceEffect");
+      }
+      this.container = options.container || document.body;
+      this.speed = options.speed || 1;
+      this.starCount = options.starCount || 1e3;
+      this.isPaused = false;
+      this.init();
+    }
+    init() {
+      this.scene = new window.THREE.Scene();
+      this.camera = new window.THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1e3);
+      this.camera.position.z = 1;
+      this.camera.rotation.x = Math.PI / 2;
+      this.renderer = new window.THREE.WebGLRenderer();
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.container.appendChild(this.renderer.domElement);
+      const geometry = new window.THREE.BufferGeometry();
+      const positions = new Float32Array(this.starCount * 3);
+      for (let i = 0; i < this.starCount; i++) {
+        positions[i * 3] = Math.random() * 600 - 300;
+        positions[i * 3 + 1] = Math.random() * 600 - 300;
+        positions[i * 3 + 2] = Math.random() * 600 - 300;
+      }
+      geometry.setAttribute("position", new window.THREE.BufferAttribute(positions, 3));
+      const material = new window.THREE.PointsMaterial({
+        color: 16777215,
+        size: 2,
+        sizeAttenuation: true
+      });
+      this.stars = new window.THREE.Points(geometry, material);
+      this.scene.add(this.stars);
+      this.animate();
+      window.addEventListener("resize", this.onWindowResize.bind(this));
+    }
+    animate() {
+      if (!this.isPaused) {
+        const positions = this.stars.geometry.attributes.position.array;
+        for (let i = 0; i < positions.length; i += 3) {
+          positions[i + 1] -= this.speed;
+          if (positions[i + 1] < -200) {
+            positions[i + 1] = 200;
+          }
+        }
+        this.stars.geometry.attributes.position.needsUpdate = true;
+      }
+      this.renderer.render(this.scene, this.camera);
+      requestAnimationFrame(this.animate.bind(this));
+    }
+    onWindowResize() {
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    setSpeed(speed) {
+      this.speed = speed;
+    }
+    pause() {
+      this.isPaused = true;
+    }
+    resume() {
+      this.isPaused = false;
+    }
+    destroy() {
+      window.removeEventListener("resize", this.onWindowResize.bind(this));
+      this.container.removeChild(this.renderer.domElement);
+      this.renderer.dispose();
+    }
+  }
+  return SpaceEffect;
+});
+//# sourceMappingURL=space-effect.umd.js.map
